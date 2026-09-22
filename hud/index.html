@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>J.A.R.V.I.S.</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <canvas id="reactor"></canvas>
+
+    <main class="hud">
+      <header class="bar">
+        <span class="mark">J.A.R.V.I.S.</span>
+        <span class="state" id="state">hors ligne</span>
+        <span class="spacer"></span>
+        <span class="metric"><b id="latency">—</b> ms</span>
+        <span class="metric"><b id="offline">local</b></span>
+      </header>
+
+      <section class="grid">
+        <div class="panel stream">
+          <h2>Conversation</h2>
+          <div id="transcript" class="scroll"></div>
+        </div>
+
+        <aside class="side">
+          <div class="panel">
+            <h2>Mémoire</h2>
+            <dl class="stats" id="stats"></dl>
+          </div>
+          <div class="panel">
+            <h2>Activité</h2>
+            <div id="events" class="scroll small"></div>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="bar">
+        <input id="input" type="text" placeholder="Parlez, ou écrivez ici…" autocomplete="off" />
+        <button id="listen" title="Ouvrir l'écoute">écouter</button>
+        <button id="consolidate" title="Lancer un cycle de consolidation">consolider</button>
+      </footer>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
