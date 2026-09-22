@@ -65,6 +65,12 @@ async def cmd_chat(args) -> None:
         print("\n")
 
 
+async def cmd_doctor(_) -> None:
+    from .doctor import run
+
+    raise SystemExit(run())
+
+
 async def cmd_status(_) -> None:
     from .memory import Memory
 
@@ -104,6 +110,7 @@ def main() -> None:
     run.set_defaults(fn=cmd_run)
 
     sub.add_parser("chat", help="conversation au clavier").set_defaults(fn=cmd_chat)
+    sub.add_parser("doctor", help="verifie l'environnement").set_defaults(fn=cmd_doctor)
     sub.add_parser("status", help="etat de la memoire").set_defaults(fn=cmd_status)
     sub.add_parser("consolidate", help="force le cycle de consolidation").set_defaults(
         fn=cmd_consolidate

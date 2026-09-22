@@ -57,34 +57,34 @@ const fragment = /* glsl */ `
     vec3 tint = palette(uState);
 
     // Coeur : un noyau doux qui enfle avec l'énergie.
-    float core = smoothstep(0.30 + 0.05 * energy, 0.0, r);
-    core = pow(core, 2.2) * (0.35 + 0.65 * energy);
+    float core = smoothstep(0.26 + 0.06 * energy, 0.0, r);
+    core = pow(core, 2.4) * (0.55 + 0.45 * energy);
 
     // Anneaux concentriques, décalés pour éviter l'effet stroboscopique.
     float rings = 0.0;
     for (int i = 0; i < 5; i++) {
       float fi = float(i);
-      float radius = 0.16 + fi * 0.075 + 0.012 * sin(uTime * (0.6 + fi * 0.17) + fi);
-      float width = 0.0022 + 0.0016 * energy;
-      rings += width / max(abs(r - radius), 0.0012) * (1.0 - fi * 0.14);
+      float radius = 0.17 + fi * 0.082 + 0.014 * sin(uTime * (0.6 + fi * 0.17) + fi);
+      float width = 0.0060 + 0.0035 * energy;
+      rings += width / max(abs(r - radius), 0.0025) * (1.0 - fi * 0.13);
     }
-    rings *= 0.14 * (0.45 + 0.55 * energy);
+    rings *= 0.42 * (0.55 + 0.45 * energy);
 
     // Arc qui balaie l'anneau : la seule chose qui tourne, donc la seule
     // qui donne le sentiment que le système travaille.
     float sweepSpeed = 0.35 + 0.9 * energy + 0.5 * step(1.5, uState);
     float sweep = fract((a / TAU) + uTime * sweepSpeed);
     float arc = smoothstep(0.0, 0.16, sweep) * smoothstep(0.30, 0.16, sweep);
-    arc *= smoothstep(0.55, 0.40, r) * smoothstep(0.30, 0.40, r);
+    arc *= smoothstep(0.62, 0.44, r) * smoothstep(0.28, 0.42, r);
 
     // Grain léger : sans lui l'aplat numérique se voit sur les grands écrans.
     float grain = noise(vUv * uRes * 0.35 + uTime * 8.0) * 0.022;
 
-    float halo = exp(-r * 2.6) * 0.10 * (0.5 + 0.5 * pulse);
-    vec3 col = tint * (core + rings + arc * 0.75 + halo) + grain;
+    float halo = exp(-r * 2.4) * 0.22 * (0.55 + 0.45 * pulse);
+    vec3 col = tint * (core + rings + arc * 1.15 + halo) + grain;
 
     // Vignette : ramène l'oeil au centre et laisse respirer les panneaux.
-    col *= 1.0 - smoothstep(0.35, 1.05, r) * 0.85;
+    col *= 1.0 - smoothstep(0.45, 1.15, r) * 0.80;
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -125,7 +125,7 @@ export class Reactor {
   /** 0 repos · 1 écoute · 2 réflexion · 3 parole */
   setState(state: number) {
     this.uniforms.uState.value = state;
-    this.target = state === 0 ? 0.12 : state === 1 ? 0.5 : state === 2 ? 0.75 : 1.0;
+    this.target = state === 0 ? 0.28 : state === 1 ? 0.6 : state === 2 ? 0.82 : 1.0;
   }
 
   /** Impulsion ponctuelle — un mot transcrit, un outil appelé. */
@@ -143,7 +143,8 @@ export class Reactor {
   private loop = () => {
     // Lissage exponentiel : l'énergie monte vite et retombe lentement, sinon
     // l'anneau clignote à chaque événement au lieu de respirer.
-    this.energy += (this.target - this.energy) * 0.045;
+    const k = this.energy < this.target ? 0.09 : 0.03;
+    this.energy += (this.target - this.energy) * k;
     this.uniforms.uEnergy.value = this.energy;
     this.uniforms.uTime.value = this.clock.getElapsedTime();
     this.renderer.render(this.scene, this.camera);

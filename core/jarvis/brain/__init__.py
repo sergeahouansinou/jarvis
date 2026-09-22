@@ -122,19 +122,22 @@ class Brain:
 
         for _ in range(3):  # au plus 3 allers-retours d'outils par tour
             filt = _TagFilter(TOOL_OPEN)
-            raw, hit = [], False
+            raw, opened = [], False
 
             async for chunk in local.stream(role, system, messages, max_tokens):
                 raw.append(chunk)
+                if opened:
+                    # La balise est ouverte : on continue de lire pour recuperer
+                    # le JSON complet, mais plus rien ne part vers la voix.
+                    if TOOL_CLOSE in "".join(raw):
+                        break
+                    continue
                 text, opened = filt.feed(chunk)
                 if text:
                     yield text
-                if opened:
-                    hit = True
-                    break
 
             body = "".join(raw)
-            if not hit and TOOL_OPEN not in body:
+            if not opened and TOOL_OPEN not in body:
                 if filt.held:
                     yield filt.held
                 return
